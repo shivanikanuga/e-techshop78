@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Tech Mega Store | Full BCA Project</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: #f1f3f6; }
+
+        /* Header & Search */
+        header { background: #2874f0; color: white; padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 22px; font-weight: bold; cursor: pointer; }
+        #searchInput { width: 100%; padding: 10px; border-radius: 4px; border: none; outline: none; }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .cart-icon { position: relative; cursor: pointer; font-weight: bold; }
+        #cart-count { background: #ff9f00; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; position: absolute; top: -10px; right: -15px; }
+
+        /* Banner */
+        .hero { background: #172337; color: white; text-align: center; padding: 30px; font-size: 20px; }
+
+        /* Products Grid */
+        .container { max-width: 1200px; margin: 20px auto; padding: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 160px; object-fit: contain; }
+        .product-title { font-weight: bold; margin: 10px 0; font-size: 16px; height: 40px; overflow: hidden; }
+        .price { color: #388e3c; font-size: 20px; font-weight: bold; }
+        .about { font-size: 12px; color: #777; margin: 10px 0; background: #f9f9f9; padding: 5px; border-radius: 3px; }
+        .btn-group { display: flex; gap: 5px; margin-top: 10px; }
+        .add-cart { background: #ff9f00; color: white; border: none; flex: 1; padding: 10px; cursor: pointer; font-weight: bold; }
+        .buy-now { background: #fb641b; color: white; border: none; flex: 1; padding: 10px; cursor: pointer; font-weight: bold; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .close-x { float: right; cursor: pointer; font-size: 20px; color: red; }
+
+        /* Footer */
+        footer { background: #172337; color: white; padding: 40px 5%; margin-top: 50px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        footer h4 { border-bottom: 2px solid #2874f0; display: inline-block; margin-bottom: 15px; }
+        footer p { font-size: 14px; color: #bdc3c7; line-height: 1.8; }
+
+        /* Success Page */
+        #success-page { display: none; text-align: center; padding: 100px 20px; background: white; min-height: 100vh; }
+    </style>
+</head>
+<body>
+
+<div id="app-content">
+    <header>
+        <div class="logo" onclick="location.reload()">E-TECH SHOP</div>
+        <div style="flex-grow: 1; margin: 0 30px; max-width: 500px;">
+            <input type="text" id="searchInput" onkeyup="searchFn()" placeholder="Search (TV, Fridge, AC...)">
+        </div>
+        <a href="about.html" style="color: white; text-decoration: none; font-weight: bold; margin-left: 15px; font-size: 16px;">About Us</a>
+        <a href="contact.html"style="color:white; text-decoration: none; font-weight: bold; margin-left: 15px; font-size: 16px;">Contact Us</a>
+        <a href="privancy.html"style="color:white; text-decoration: none; font-weight: bold; margin-left: 15px; font-size: 16px;">Privancy Policy</a>
+
+        <div class="nav-links">
+            <div class="cart-icon" onclick="showCart()">🛒 Cart <span id="cart-count">0</span></div>
+            <button id="logBtn" onclick="openModal('login-modal')" style="background:white; color:#2874f0; border:none; padding:8px 15px; font-weight:bold; cursor:pointer;">Login</button>
+            <span id="user-info" style="display:none; font-weight:bold;"></span>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h2>Premium Electronics ⚡</h2>
+    </div>
+
+    <div class="container" id="prodContainer">
+        <!-- Products -->
+        <div class="card">
+            <img src="T.V.jpg" alt="TV">
+            <div class="product-title">Sony Bravia 55" 4K Google TV</div>
+            <div class="price">₹65,000</div>
+            <div class="about">✔ 4K HDR ✔ Dolby Audio ✔ 120Hz Refresh Rate</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Sony TV', 65000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Sony TV', 65000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="Fridge.jpg" alt="Fridge">
+            <div class="product-title">Samsung 253L Double Door Fridge</div>
+            <div class="price">₹24,990</div>
+            <div class="about">✔ 3 Star Rating ✔ Digital Inverter ✔ Frost Free</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Samsung Fridge', 24990)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Samsung Fridge', 24990)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="AC.jpg" alt="AC">
+            <div class="product-title">Voltas 1.5 Ton 5 Star Split AC</div>
+            <div class="price">₹38,000</div>
+            <div class="about">✔ High Cooling Performance ✔ Turbo Mode ✔ Copper</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Voltas AC', 38000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Voltas AC', 38000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="machine.jpg" alt="Washing Machine">
+            <div class="product-title">LG 7kg Fully Automatic Machine</div>
+            <div class="price">₹29,000</div>
+            <div class="about">✔ 6 Motion DD ✔ Inverter Direct Drive ✔ Steam Wash</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('LG Washing', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('LG Washing', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="laptop.jpg" alt="Laptop">
+            <div class="product-title">HP Laptop i5 12th Gen</div>
+            <div class="price">₹55,000</div>
+            <div class="about">new models | intel Core i5 | 6 month Warranty</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Laptop', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Laptop', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="microwave.jpg" alt="microwave">
+            <div class="product-title">IFB 20L Convection Microwave</div>
+            <div class="price">₹55,000</div>
+            <div class="about">Stainless Steel Cavity | Auto Cook Menus | Touch Key Pad</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Laptop', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Laptop', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="phone.jpg" alt="smartphone">
+            <div class="product-title">Samsung Galaxy M34</div>
+            <div class="price">₹55,000</div>
+            <div class="about">new models | 5G phone | 1 Year Warranty</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Phone', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Phone', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="mixie.jpg" alt="mixie">
+            <div class="product-title">Prestige 750W Mixer Grinder</div>
+            <div class="price">₹55,000</div>
+            <div class="about">3 Stainless Steel Jars | Powerful Motor | 2 Year Warranty</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Mixie', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('mixie', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="Had phone.jpg" alt="had phone">
+            <div class="product-title"> 6Light modes</div>
+            <div class="price">₹55,000</div>
+            <div class="about">60H Battery | ENx Tech | Stream ad Free Music via APP Support | bluetooth Headphones</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Had phone', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Had phone', 29000)">Buy Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="Ear Phone.jpg" alt="Ear phone">
+            <div class="product-title">In-ear earphone</div>
+            <div class="price">₹55,000</div>
+            <div class="about">Bult-in-Mic | Music and call Control|1.2m Tangle-free Cable</div>
+            <div class="btn-group">
+                <button class="add-cart" onclick="addToCart('Ear phone', 29000)">Add to Cart</button>
+                <button class="buy-now" onclick="quickBuy('Ear phone', 29000)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div>
+            <h4>E-TECH MEGA STORE</h4>
+            <p>India's leading electronic gadget store for students. Quality products at best prices.</p>
+        </div>
+        <div>
+            <h4>Contact Details</h4>
+            <p>📍 Location: Delhi, India</p>
+            <p>📞 Phone: +91 98765 43210</p>
+            <p>✉ Email: support@etech.com</p>
+        </div>
+        <div>
+            <h4>About Project</h4>
+            <p>Developed by: <b>[shivani]</b></p>
+            <p>Course: BCA (Final Semester)</p>
+            <p>© 2024 E-Tech Project</p>
+        </div>
+    </footer>
+    <!-- Admin Panel Section: Jahan permanent data live dikhega -->
+<div style="max-width: 1200px; margin: 30px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="border-bottom: 2px solid #0071e3; padding-bottom: 10px; color: #1d1d1f;">Admin Dashboard: Customer Orders</h2>
+    <div id="admin-orders-container" style="margin-top: 20px;">
+        <!-- Saved orders yahan dikhenge -->
+    </div>
+</div>
+</div>
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeM('login-modal')">&times;</span>
+        <h2>Login</h2>
+        <input type="email" id="uEmail" placeholder="Email Address (e.g. user@gmail.com)">
+        <input type="password" id="uPass" placeholder="Password">
+        <button class="buy-now" style="width:100%; margin-top:10px;" onclick="validateLogin()">Enter Shop</button>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="payment-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-x" onclick="closeM('payment-modal')">&times;</span>
+        <h3>Final Checkout</h3>
+        <p id="pay-details" style="margin:10px 0; font-weight:bold; color:#2874f0;"></p>
+        <input type="text" id="shipAddr" placeholder="Street Address">
+        <input type="number" id="shipPin" placeholder="6-Digit Pincode">
+        <input type="number" id="shipMob" placeholder="10-Digit Mobile Number">
+        <select id="payMethod">
+            <option value="">Select Payment Mode</option>
+            <option>UPI (Google Pay/PhonePe)</option>
+            <option>Cash on Delivery</option>
+        </select>
+        <button class="add-cart" style="width:100%; background:#28a745" onclick="validatePayment()">Place Order Now</button>
+    </div>
+</div>
+
+<!-- Success Screen -->
+<div id="success-page">
+    <h1 style="color:#28a745; font-size:60px;">✔</h1>
+    <h2 style="color:#2874f0">Order Successfully Confirmed!</h2>
+    <p style="margin:20px 0;">Your order ID <b>#BCA2024_099</b> has been generated.</p>
+    <button class="buy-now" onclick="location.reload()">Return to Shop</button>
+</div>
+
+<script>
+    let cart = [];
+    let isLogged = false;
+
+    function openModal(id) { document.getElementById(id).style.display='flex'; }
+    function closeM(id) { document.getElementById(id).style.display='none'; }
+
+    // 1. Validation Logic
+    function validateLogin() {
+        let email = document.getElementById('uEmail').value;
+        let pass = document.getElementById('uPass').value;
+        if(!email.includes('@') || pass.length < 5) {
+            alert("Sahi Email daalein aur Password kam se kam 5 character ka ho!");
+        } else {
+            isLogged = true;
+            closeM('login-modal');
+            document.getElementById('logBtn').style.display='none';
+            document.getElementById('user-info').innerText = "Hi, " + email.split('@')[0];
+            document.getElementById('user-info').style.display='inline';
+            alert("Login Successful!");
+        }
+    }
+
+    // 2. Cart System
+    function addToCart(name, price) {
+        cart.push({name, price});
+        document.getElementById('cart-count').innerText = cart.length;
+        alert(name + " cart mein add ho gaya!");
+    }
+
+    function showCart() {
+        if(cart.length === 0) { alert("Cart khali hai!"); return; }
+        let total = cart.reduce((sum, item) => sum + item.price, 0);
+        quickBuy("Cart Items ("+cart.length+")", total);
+    }
+
+    function quickBuy(name, price) {
+        if(!isLogged) { alert("Pehle Login karein!"); openModal('login-modal'); return; }
+        document.getElementById('pay-details').innerText = name + " | Total: ₹" + price;
+        openModal('payment-modal');
+    }
+
+    // 3. Payment Validation
+    function validatePayment() {
+        let addr = document.getElementById('shipAddr').value;
+        let pin = document.getElementById('shipPin').value;
+        let mob = document.getElementById('shipMob').value;
+        let pay = document.getElementById('payMethod').value;
+
+    
+
+    if(addr === "" || pin.length !== 6 || mob.length !== 10) {
+        alert("Kripya details sahi bharein (Pin: 6 digit, Mob: 10 digit)!");
+    } else {
+
+        document.getElementById('app-content') .style.display='none';
+       // --- YAHA SE NAYA CODE JODNA HAI (PERMANENT SAVE KARNE KE LIYE) ---
+        let existingOrders = JSON.parse(localStorage.getItem('adminOrders')) || [];
+        let newOrder = {
+            customerName: document.getElementById('user-info') ? document.getElementById('user-info').innerText : 'Guest',
+            address: addr,
+            pincode: pin,
+            mobile: mob,
+            paymentMethod: pay,
+            orderSummary: document.getElementById('pay-details').innerText,
+            time: new Date().toLocaleString()
+        };
+        existingOrders.unshift(newOrder); // Naya order sabse upar save hoga
+        localStorage.setItem('adminOrders', JSON.stringify(existingOrders));
+        // --- YAHA TAK NAYA CODE HAI ---
+
+        closeM('payment-modal'); // Aapki line 286 pehle se likhi hui hai
+        closeM('payment-modal'); // Modal band karne ke liye
+        
+        document.getElementById('success-page').style.display='block';
+    }
+}
+
+    // 4. Search Logic
+    function searchFn() {
+        let val = document.getElementById('searchInput').value.toUpperCase();
+        let cards = document.getElementsByClassName('card');
+        for(let card of cards) {
+            let txt = card.querySelector('.product-title').innerText.toUpperCase();
+            card.style.display = txt.includes(val) ? "" : "none";
+        }
+    }
+    // Saved orders ko screen par load karne ka function
+    function loadSavedOrders() {
+        let container = document.getElementById('admin-orders-container');
+        let orders = JSON.parse(localStorage.getItem('adminOrders')) || [];
+        
+        if (orders.length === 0) {
+            container.innerHTML = '<p style="color: gray; font-style: italic;">No orders placed yet.</p>';
+            return;
+        }
+        
+        container.innerHTML = ''; // Purana saaf karein
+        orders.forEach(order => {
+            let card = `
+                <div style="background: #f8f9fa; border-left: 4px solid #28a745; padding: 15px; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: gray; margin-bottom: 5px;">
+                        <strong>✓ Order Authenticated</strong>
+                        <span>${order.time}</span>
+                    </div>
+                    <p><strong>Product Details:</strong> ${order.orderSummary}</p>
+                    <p><strong>Delivery Address:</strong> ${order.address}, PIN: ${order.pincode}</p>
+                    <p><strong>Mobile:</strong> ${order.mobile} | <strong>Payment:</strong> ${order.paymentMethod}</p>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+        });
+    }
+
+    // Page open hote hi data load ho jaye
+    window.onload = loadSavedOrders;
+</script>
+
+</body>
+</html>
